@@ -1,15 +1,25 @@
 <nav class="navbar">
-    <div class="logo">
-        <a href="/" style="text-decoration: none; color: white; display: flex; gap: 10px; align-items: center;">
-            <i class="fas fa-subway"></i> Metro
-        </a>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <% if (locals.loggedIn) { %>
+            <div style="color: var(--accent-color); font-weight: 500;">
+                <i class="fas fa-user"></i> <%= locals.user %>
+            </div>
+        <% } %>
+        <div class="logo">
+            <a href="/" style="text-decoration: none; color: white; display: flex; gap: 10px; align-items: center;">
+                <i class="fas fa-subway"></i> Metro
+            </a>
+        </div>
     </div>
+    
     <ul class="nav-links">
         <li><a class="btn-primary btn-sm" href="/tickets">Compra tickets</a></li>
         <li><a class="btn-primary btn-sm" href="#">Contactanos</a></li>
         <% if (locals.loggedIn) { %>
-            <li><a href="#" style="color: var(--accent-color);"><i class="fas fa-user"></i> <%= locals.user %></a></li>
-            <li><a href="/logout" class="btn-sm" style="background: rgba(255,255,255,0.1); border: 1px solid white;">Salir</a></li>
+            <% if (locals.rol === 'admin') { %>
+                <li><a href="/admin/dashboard" class="btn-primary btn-sm" style="background: #ffc107; color: #333; border: none;">Admin</a></li>
+            <% } %>
+            <li><a href="/logout" class="btn-primary btn-sm" style="background: rgba(255,255,255,0.1); border: 1px solid white;">Salir</a></li>
         <% } else { %>
             <li><a href="/login" class="btn-primary btn-sm" style="margin-top: 0;">Login</a></li>
         <% } %>

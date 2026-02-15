@@ -21,7 +21,7 @@ body {
 
 .navbar {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
     background: var(--nav-bg);
@@ -138,7 +138,7 @@ body {
 
 .btn-primary {
     background: var(--secondary-color);
-    color: rgb(255, 255, 255);
+    color: rgba(217, 217, 217, 0.923);
     padding: 15px 30px;
     border: none;
     border-radius: 50px;
@@ -148,7 +148,7 @@ body {
     text-decoration: none;
     display: inline-block;
     margin-top: 20px;
-    box-shadow: 0 4px 15px rgba(255, 3, 3, 0.2);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:hover {
@@ -480,3 +480,172 @@ select:focus {
         transform: translateY(0);
     }
 }
+
+/* tabla de admin*/
+
+/* Contenedor de la tabla para asegurar el redondeo */
+.glass-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(255, 255, 255, 0.1); /* Fondo blanco traslúcido */
+    backdrop-filter: blur(10px); /* Efecto de desenfoque de vidrio */
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    color: rgb(0, 0, 0);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Encabezado */
+.glass-table thead {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.glass-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+/* Celdas del cuerpo */
+.glass-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    vertical-align: middle;
+}
+
+.glass-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Resaltado al pasar el mouse */
+.glass-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transition: 0.3s;
+}
+
+.bold-text {
+    font-weight: 500;
+}
+
+/* Estilo del Botón */
+.btn-edit {
+    background: rgba(255, 255, 255, 0.8);
+    color: #4a008a; /* Color morado oscuro para contrastar */
+    border: none;
+    padding: 6px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-edit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* --- Estilo del Encabezado (Thead) --- */
+.glass-table thead tr {
+    background-color: #ffffff; /* Fondo blanco sólido para que resalte */
+}
+
+.glass-table th {
+    padding: 18px 15px;
+    color: #4a008a; /* Color morado oscuro para el texto */
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: none;
+}
+
+/* --- Estilo de los Botones --- */
+.btn-edit {
+    background: linear-gradient(135deg, #6e8efb, #a777e3); /* Degradado moderno */
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 50px; /* Bordes totalmente redondeados (pill style) */
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    text-transform: capitalize;
+}
+
+/* Efecto al pasar el mouse por encima del botón */
+.btn-edit:hover {
+    transform: translateY(-2px); /* Pequeño salto hacia arriba */
+    box-shadow: 0 6px 20px rgba(110, 142, 251, 0.4);
+    filter: brightness(1.1);
+}
+
+/* Efecto cuando se hace clic */
+.btn-edit:active {
+    transform: translateY(0);
+}
+
+/* Estilo para cuando el botón está deshabilitado */
+.btn-edit:disabled {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 50px; 
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    text-transform: capitalize;
+}
+
+.tickets-table {
+    width: 80%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    color: rgb(0, 0, 0);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tickets-table th {
+    padding: 18px 15px;
+    color: #4a008a; /* Color morado oscuro para el texto */
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: none;
+}
+
+.tickets-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    vertical-align: middle;
+}
+

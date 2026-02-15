@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 console.log('Iniciando servidor...');
 
-// Configuración de Vistas
+// Vistas
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'vistas'));
 
@@ -25,7 +25,7 @@ app.use(session({
     secret: 'secreto_super_seguro_metro',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // Usar true si es HTTPS
+    cookie: { secure: false }
 }));
 
 // Middleware para pasar usuario a todas las vistas
@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 // Rutas
 const authControlador = require('./controladores/authControlador');
 
-// Auth
+// Autentificador
 app.get('/login', authControlador.mostrarLogin);
 app.post('/login', authControlador.login);
 app.get('/registro', authControlador.mostrarRegistro);
@@ -125,6 +125,47 @@ app.get('/pago', async (req, res) => {
 
 app.post('/procesar-pago', ticketControlador.procesarPago);
 app.get('/ticket/:id', ticketControlador.verTicket);
+
+// --- RUTAS DE ADMINISTRACIÓN ---
+
+const adminControlador = require('./controladores/adminControlador');
+
+// Middleware para verificar rol de admin
+const verificarAdmin = (req, res, next) => {
+    if (req.session.loggedin && req.session.rol === 'admin') {
+        next();
+    } else {
+        // Opción A: Mostrar error 403
+        // res.status(403).send('Acceso denegado: Se requieren permisos de administrador.');
+
+        // Opción B: Redirigir al dashboard (o login), quizás con un mensaje flash
+        res.redirect('/');
+    }
+};
+
+// Dashboard
+app.get('/admin/dashboard', verificarAdmin, adminControlador.dashboard);
+
+// Gestión Estaciones
+app.get('/admin/estaciones', verificarAdmin, adminControlador.listarEstaciones);
+app.post('/admin/estaciones/crear', verificarAdmin, adminControlador.crearEstacion);
+app.post('/admin/estaciones/editar', verificarAdmin, adminControlador.editarEstacion);
+app.get('/admin/estaciones/eliminar/:id', verificarAdmin, adminControlador.eliminarEstacion);
+
+// Gestión Rutas
+app.get('/admin/rutas', verificarAdmin, adminControlador.listarRutas);
+app.post('/admin/rutas/crear', verificarAdmin, adminControlador.crearRuta);
+app.post('/admin/rutas/editar', verificarAdmin, adminControlador.editarRuta);
+
+// Gestión Usuarios
+app.get('/admin/usuarios', verificarAdmin, adminControlador.listarUsuarios);
+app.post('/admin/usuarios/crear', verificarAdmin, adminControlador.crearUsuario);
+app.post('/admin/usuarios/editar', verificarAdmin, adminControlador.editarUsuario);
+app.get('/admin/usuarios/eliminar/:id', verificarAdmin, adminControlador.eliminarUsuario);
+
+// Reportes
+app.get('/admin/tickets', verificarAdmin, adminControlador.listarTickets);
+app.get('/admin/pagos', verificarAdmin, adminControlador.listarPagos);
 
 // Iniciar Servidor
 app.listen(PORT, () => {

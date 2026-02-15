@@ -12,10 +12,8 @@
     <%- include('partials/navbar') %>
 
     <div class="container" style="padding-top: 40px;">
-        <!-- Routes Section -->
         <div class="routes-section">
             <h2 class="section-title">Rutas disponibles - <%= fechaActual %></h2>
-            
             <div class="routes-grid">
                 <% if (rutas && rutas.length > 0) { %>
                     <% rutas.forEach(ruta => { %>
@@ -38,10 +36,8 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
-            <!-- Social Media -->
             <div class="footer-section social">
                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                 <a href="#"><i class="fab fa-instagram"></i></a>
@@ -50,7 +46,6 @@
                 <a href="#"><i class="fab fa-tiktok"></i></a>
             </div>
 
-            <!-- Información -->
             <div class="footer-section info">
                 <h3>Información</h3>
                 <ul>
@@ -61,7 +56,6 @@
                 </ul>
             </div>
 
-            <!-- Contacto -->
             <div class="footer-section contacto">
                 <h3>Contacto</h3>
                 <p><strong>Correo:</strong><br> comunicacion@metrodequito.gob.ec</p>
@@ -69,7 +63,6 @@
                 <p><strong>Dirección:</strong> Calle Montúfar N2-50 y Calle Sucre</p>
             </div>
 
-            <!-- Logos -->
             <div class="footer-section logos">
                 <div class="logo-placeholder">
                     <i class="fas fa-subway"></i> Metro <br>
