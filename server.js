@@ -1,0 +1,132 @@
+const express = require('express');
+const session = require('express-session');
+const path = require('path');
+const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
+const db = require('./config/base_de_datos');
+const ticketControlador = require('./controladores/ticketControlador');
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+console.log('Iniciando servidor...');
+
+// Configuración de Vistas
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'vistas'));
+
+// Middleware
+app.use(express.static(path.join(__dirname, 'publico')));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(session({
+    secret: 'secreto_super_seguro_metro',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Usar true si es HTTPS
+}));
+
+// Middleware para pasar usuario a todas las vistas
+app.use((req, res, next) => {
+    res.locals.loggedIn = req.session.loggedin || false;
+    res.locals.user = req.session.name || null;
+    res.locals.rol = req.session.rol || null;
+    next();
+});
+
+// Rutas
+const authControlador = require('./controladores/authControlador');
+
+// Auth
+app.get('/login', authControlador.mostrarLogin);
+app.post('/login', authControlador.login);
+app.get('/registro', authControlador.mostrarRegistro);
+app.post('/registro', authControlador.registro);
+app.get('/logout', authControlador.logout);
+
+// Inicio (Dashboard)
+app.get('/', (req, res) => {
+    res.render('inicio', { title: 'Metro de Quito - Inicio' });
+});
+
+// Compra de Tickets (Lista de Rutas)
+app.get('/tickets', async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT r.id, r.nombre, r.precio, e1.nombre as origen, e2.nombre as destino 
+            FROM rutas r
+            JOIN estaciones e1 ON r.estacion_origen_id = e1.id
+            JOIN estaciones e2 ON r.estacion_destino_id = e2.id
+        `);
+
+        const fechaActual = new Date().toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        res.render('compra_tickets', {
+            title: 'Compra de Tickets - Metro de Quito',
+            rutas: result.rows,
+            fechaActual: fechaActual
+        });
+    } catch (error) {
+        console.error('Error al obtener rutas:', error);
+        res.render('compra_tickets', {
+            title: 'Compra de Tickets - Metro de Quito',
+            rutas: [],
+            fechaActual: new Date().toLocaleDateString()
+        });
+    }
+});
+
+// Pasarela de Pago
+app.get('/pago', async (req, res) => {
+    // Verificar login (opcional, pero recomendado)
+    if (!req.session.loggedin) {
+        return res.redirect('/login');
+    }
+
+    const rutaId = req.query.rutaId;
+    let ruta = null;
+
+    if (rutaId) {
+        try {
+            const result = await db.query(`
+                SELECT r.id, r.nombre, r.precio, e1.nombre as origen, e2.nombre as destino 
+                FROM rutas r
+                JOIN estaciones e1 ON r.estacion_origen_id = e1.id
+                JOIN estaciones e2 ON r.estacion_destino_id = e2.id
+                WHERE r.id = $1
+            `, [rutaId]);
+            if (result.rows.length > 0) {
+                ruta = result.rows[0];
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    if (!ruta) {
+        ruta = {
+            id: 0,
+            nombre: 'Ruta no seleccionada',
+            precio: 0.00,
+            origen: '-',
+            destino: '-'
+        };
+    }
+
+    res.render('pago', { title: 'Pasarela de Pago', ruta });
+});
+
+app.post('/procesar-pago', ticketControlador.procesarPago);
+app.get('/ticket/:id', ticketControlador.verTicket);
+
+// Iniciar Servidor
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});

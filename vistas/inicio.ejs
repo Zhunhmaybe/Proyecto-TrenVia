@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <!-- Navbar -->
+    <%- include('partials/navbar') %>
+    
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        
+        <!-- Hero / Welcome Section -->
+        <header class="dashboard-header">
+            <h1>Metro en Cifras</h1>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <!-- Stat 1 -->
+            <div class="stat-card">
+                <i class="fas fa-ticket-alt stat-icon"></i>
+                <div class="stat-number">129.7 M</div>
+                <div class="stat-label">Viajes acumulados</div>
+            </div>
+
+            <!-- Stat 2 -->
+            <div class="stat-card">
+                <i class="far fa-calendar-alt stat-icon"></i>
+                <div class="stat-number">5.4 M</div>
+                <div class="stat-label">Viajes enero 2026</div>
+            </div>
+
+            <!-- Stat 3 -->
+            <div class="stat-card">
+                <i class="fas fa-train stat-icon"></i>
+                <div class="stat-number">+5.9 M</div>
+                <div class="stat-label">Kilómetros recorridos</div>
+            </div>
+
+            <!-- Stat 4 -->
+            <div class="stat-card">
+                <i class="fas fa-tree stat-icon"></i>
+                <div class="stat-number">131 mil</div>
+                <div class="stat-label">Toneladas menos de CO2</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/tickets" class="btn-secondary">Conoce más</a>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <!-- Social Media -->
+            <div class="footer-section social">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+            </div>
+
+            <!-- Información -->
+            <div class="footer-section info">
+                <h3>Información</h3>
+                <ul>
+                    <li><a href="#">Antisoborno</a></li>
+                    <li><a href="#">Transparencia</a></li>
+                    <li><a href="#">Rendición de Cuentas</a></li>
+                    <li><a href="#">PAC</a></li>
+                </ul>
+            </div>
+
+            <!-- Contacto -->
+            <div class="footer-section contacto">
+                <h3>Contacto</h3>
+                <p><strong>Correo:</strong><br> comunicacion@metrodequito.gob.ec</p>
+                <p><strong>Teléfono:</strong> 023827860</p>
+                <p><strong>Dirección:</strong> Calle Montúfar N2-50 y Calle Sucre</p>
+            </div>
+
+            <!-- Logos -->
+            <div class="footer-section logos">
+                <div class="logo-placeholder">
+                    <i class="fas fa-subway"></i> Metro <br>
+                    <span>Quito Alcaldía Metropolitana</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
