@@ -59,10 +59,8 @@ exports.editarEstacion = async (req, res) => {
 
 exports.eliminarEstacion = async (req, res) => {
     const { id } = req.params;
-    const { force } = req.query; // ?force=true para eliminación en cascada
-
+    const { force } = req.query;
     try {
-        // 1. Verificar si hay rutas asociadas
         const rutasAsociadas = await db.query(
             'SELECT COUNT(*) FROM rutas WHERE estacion_origen_id = $1 OR estacion_destino_id = $1',
             [id]
@@ -70,26 +68,11 @@ exports.eliminarEstacion = async (req, res) => {
         const count = parseInt(rutasAsociadas.rows[0].count);
 
         if (count > 0 && force !== 'true') {
-            // Si hay dependencias y no se forzó, redirigir con error
             return res.redirect(`/admin/estaciones?error=dependency&id=${id}&count=${count}`);
         }
-
-        // 2. Si se fuerza o no hay dependencias, proceder
         if (force === 'true') {
-            // Eliminación en cascada: Primero eliminar rutas asociadas
-            // Nota: Esto podría fallar si hay tickets asociados a esas rutas y no hay ON DELETE CASCADE en tickets.
-            // Para ser robustos, deberíamos eliminar tickets también o marcarlos.
-            // Asumimos que queremos limpiar todo.
-
-            // Obtener IDs de rutas a eliminar para log o depuración (opcional)
-            // const rutasAEliminar = await db.query('SELECT id FROM rutas WHERE estacion_origen_id = $1 OR estacion_destino_id = $1', [id]);
-
-            // Eliminar rutas (y sus tickets si la DB tiene cascade, sino fallará. 
-            // Intentemos eliminar rutas. Si falla por tickets, el usuario verá error, pero por ahora simplificamos).
             await db.query('DELETE FROM rutas WHERE estacion_origen_id = $1 OR estacion_destino_id = $1', [id]);
         }
-
-        // 3. Eliminar la estación
         await db.query('DELETE FROM estaciones WHERE id = $1', [id]);
         res.redirect('/admin/estaciones?success=deleted');
 
@@ -99,7 +82,6 @@ exports.eliminarEstacion = async (req, res) => {
     }
 };
 
-// --- GESTIÓN DE RUTAS ---
 exports.listarRutas = async (req, res) => {
     try {
         const rutas = await db.query(`
@@ -149,7 +131,6 @@ exports.editarRuta = async (req, res) => {
     }
 };
 
-// --- GESTIÓN DE USUARIOS ---
 exports.listarUsuarios = async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM usuarios ORDER BY id');
@@ -180,7 +161,6 @@ exports.editarUsuario = async (req, res) => {
     const { id, nombre, email, rol, password } = req.body;
     try {
         if (password && password.trim() !== '') {
-            // Si hay contraseña nueva, hashearla y actualizar todo
             const salt = await bcrypt.genSalt(10);
             const hashPassword = await bcrypt.hash(password, salt);
             await db.query(
@@ -188,7 +168,6 @@ exports.editarUsuario = async (req, res) => {
                 [nombre, email, rol, hashPassword, id]
             );
         } else {
-            // Si no hay contraseña nueva, actualizar solo otros datos
             await db.query(
                 'UPDATE usuarios SET nombre = $1, email = $2, rol = $3 WHERE id = $4',
                 [nombre, email, rol, id]
@@ -204,21 +183,13 @@ exports.editarUsuario = async (req, res) => {
 exports.eliminarUsuario = async (req, res) => {
     const { id } = req.params;
     try {
-        // 1. Obtener IDs de los tickets del usuario
         const tickets = await db.query('SELECT id FROM tickets WHERE usuario_id = $1', [id]);
 
         if (tickets.rows.length > 0) {
             const ticketIds = tickets.rows.map(ticket => ticket.id);
-
-            // 2. Eliminar pagos asociados a esos tickets
-            // Usamos ANY($1) para pasar un array de IDs
             await db.query('DELETE FROM pagos WHERE ticket_id = ANY($1)', [ticketIds]);
-
-            // 3. Eliminar los tickets
             await db.query('DELETE FROM tickets WHERE usuario_id = $1', [id]);
         }
-
-        // 4. Eliminar el usuario
         await db.query('DELETE FROM usuarios WHERE id = $1', [id]);
         res.redirect('/admin/usuarios');
     } catch (error) {
@@ -227,7 +198,6 @@ exports.eliminarUsuario = async (req, res) => {
     }
 };
 
-// --- REPORTES ---
 exports.listarTickets = async (req, res) => {
     try {
         const result = await db.query(`
@@ -240,7 +210,6 @@ exports.listarTickets = async (req, res) => {
         res.render('admin/tickets', { title: 'Reporte de Tickets', tickets: result.rows });
     } catch (error) {
         console.error(error);
-        // Si falla porque no existen columnas como created_at, ajustar la query
         try {
             const resultBackup = await db.query(`
                 SELECT t.id, t.codigo_qr, t.estado, u.nombre as usuario_nombre, r.nombre as ruta_nombre

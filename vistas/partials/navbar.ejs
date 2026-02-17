@@ -14,8 +14,9 @@
     
     <ul class="nav-links">
         <li><a class="btn-primary btn-sm" href="/tickets">Compra tickets</a></li>
-        <li><a class="btn-primary btn-sm" href="#">Contactanos</a></li>
+        <li><a class="btn-primary btn-sm" href="https://www.utn.edu.ec">Contactanos</a></li>
         <% if (locals.loggedIn) { %>
+            <li><a class="btn-primary btn-sm" href="/mis-tickets">Mis Tickets</a></li>
             <% if (locals.rol === 'admin') { %>
                 <li><a href="/admin/dashboard" class="btn-primary btn-sm" style="background: #ffc107; color: #333; border: none;">Admin</a></li>
             <% } %>

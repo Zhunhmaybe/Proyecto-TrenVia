@@ -125,6 +125,7 @@ app.get('/pago', async (req, res) => {
 
 app.post('/procesar-pago', ticketControlador.procesarPago);
 app.get('/ticket/:id', ticketControlador.verTicket);
+app.get('/mis-tickets', ticketControlador.listarTicketsUsuario);
 
 // --- RUTAS DE ADMINISTRACIÓN ---
 

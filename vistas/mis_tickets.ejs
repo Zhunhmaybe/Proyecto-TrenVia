@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .tickets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 20px 0;
+            width: 100%;
+            justify-items: center;
+        }
+        
+        /* Ajustes para que la tarjeta de factura se vea bien en lista */
+        .invoice-card-mini {
+            background: white;
+            color: #333;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            font-family: 'Segoe UI', sans-serif;
+            border-top: 5px solid var(--primary-color);
+            transition: transform 0.3s ease;
+            text-decoration: none; /* Porque todo el card será un link */
+            display: block;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .invoice-card-mini:hover {
+            transform: translateY(-5px);
+        }
+
+        .invoice-card-mini .invoice-header {
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .invoice-card-mini .invoice-logo {
+            font-size: 1.2rem;
+        }
+
+        .invoice-card-mini .success-icon {
+            font-size: 2rem;
+            margin: 10px 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: white;
+            padding: 50px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    
+    <div class="container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-ticket-alt"></i> Mis Tickets</h1>
+            <p style="color: #e0e0e0; margin-top: 10px;">Historial de tus viajes comprados</p>
+        </div>
+
+        <% if (tickets.length > 0) { %>
+            <div class="tickets-grid">
+                <% tickets.forEach(ticket => { %>
+                    <a href="/ticket/<%= ticket.id %>" class="invoice-card-mini">
+                        <div class="invoice-header">
+                            <div class="invoice-logo">
+                                <i class="fas fa-train"></i> Metro
+                            </div>
+                            <div class="invoice-title">Ticket #<%= ticket.id %></div>
+                            
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="success-message" style="font-size: 0.9rem;">Pagado</div>
+                        </div>
+
+                        <div class="invoice-body">
+                            <div class="invoice-row">
+                                <span class="invoice-label">Fecha:</span>
+                                <span class="invoice-value"><%= new Date(ticket.fecha_compra).toLocaleDateString() %></span>
+                            </div>
+                            <div class="invoice-row">
+                                <span class="invoice-label">Ruta:</span>
+                                <span class="invoice-value"><%= ticket.ruta_nombre %></span>
+                            </div>
+                            <div class="invoice-row">
+                                <span class="invoice-label">Total:</span>
+                                <span class="invoice-value" style="color: var(--primary-color); font-size: 1.1rem;">$<%= parseFloat(ticket.precio).toFixed(2) %></span>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 15px; font-size: 0.8rem; color: #666;">
+                            Click para ver detalles completos
+                        </div>
+                    </a>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <i class="fas fa-receipt" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.7;"></i>
+                <h2>No tienes tickets comprados aún</h2>
+                <a href="/tickets" class="btn-primary">Comprar un Ticket</a>
+            </div>
+        <% } %>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/" class="btn-primary" style="background: transparent; border: 1px solid white;">Volver al Inicio</a>
+        </div>
+    </div>
+</body>
+</html>

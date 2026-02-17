@@ -9,28 +9,60 @@
 </head>
 <body>
     <%- include('partials/navbar') %>
-    <div class="container">
-        <div class="glass-card">
-            <h1><i class="fas fa-check-circle" style="color: #00e676;"></i> Pago Exitoso</h1>
-            <p>Tu viaje está listo.</p>
-
-            <div class="ticket-info">
-                <h2>Ruta: <%= ticket.ruta_nombre %></h2>
-                <div class="qr-code">
-                    <img src="<%= ticket.codigo_qr %>" alt="Código QR del Ticket">
+    <div class="ticket-container">
+        <div class="invoice-card">
+            <div class="invoice-header">
+                <div class="invoice-logo">
+                    <i class="fas fa-train"></i> Metro
                 </div>
-                <p style="margin-top: 15px; font-size: 0.9rem; color: #d1c4e9;">Presenta este código en los validadores de la estación.</p>
+                <div class="invoice-title">Comprobante de Viaje</div>
+                
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="success-message">Pago Exitoso</div>
             </div>
 
-            <div class="detalles-factura" style="text-align: left; font-size: 0.9rem; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-                <p><strong>Ticket ID:</strong> #<%= ticket.id %></p>
-                <p><strong>Fecha:</strong> <%= new Date(ticket.fecha_compra).toLocaleString() %></p>
-                <p><strong>Origen:</strong> <%= ticket.origen %></p>
-                <p><strong>Destino:</strong> <%= ticket.destino %></p>
-                <p><strong>Total:</strong> $<%= parseFloat(ticket.precio).toFixed(2) %></p>
+            <div class="invoice-body">
+                <div class="invoice-row">
+                    <span class="invoice-label">Ticket ID:</span>
+                    <span class="invoice-value">#<%= ticket.id %></span>
+                </div>
+                <div class="invoice-row">
+                    <span class="invoice-label">Fecha:</span>
+                    <span class="invoice-value"><%= new Date(ticket.fecha_compra).toLocaleString() %></span>
+                </div>
+                
+                <div style="margin: 15px 0; border-bottom: 2px dashed #eee;"></div>
+
+                <div class="invoice-row">
+                    <span class="invoice-label">Ruta:</span>
+                    <span class="invoice-value"><%= ticket.ruta_nombre %></span>
+                </div>
+                <div class="invoice-row">
+                    <span class="invoice-label">Origen:</span>
+                    <span class="invoice-value"><%= ticket.origen %></span>
+                </div>
+                <div class="invoice-row">
+                    <span class="invoice-label">Destino:</span>
+                    <span class="invoice-value"><%= ticket.destino %></span>
+                </div>
             </div>
 
-            <a href="/" class="btn-primary" style="background: transparent; border: 1px solid white; margin-top: 30px;">Volver al Inicio</a>
+            <div class="qr-section">
+                <img src="<%= ticket.codigo_qr %>" alt="Código QR del Ticket">
+                <p class="qr-help">Escanea este código en el validador</p>
+            </div>
+
+            <div class="invoice-total">
+                <span class="total-label">Total Pagado:</span>
+                <span class="total-amount">$<%= parseFloat(ticket.precio).toFixed(2) %></span>
+            </div>
+
+            <div class="invoice-footer">
+                <a href="/" class="btn-invoice">Volver al Inicio</a>
+                <p style="margin-top: 15px; font-size: 0.75rem; color: #aaa;">Gracias por viajar con nosotros</p>
+            </div>
         </div>
     </div>
 </body>

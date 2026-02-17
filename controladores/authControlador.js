@@ -1,22 +1,18 @@
 const bcrypt = require('bcryptjs');
 const db = require('../config/base_de_datos');
 
-// Mostrar formulario de login
 exports.mostrarLogin = (req, res) => {
     res.render('login', { title: 'Iniciar Sesión - Metro de Quito', error: null });
 };
 
-// Mostrar formulario de registro
 exports.mostrarRegistro = (req, res) => {
     res.render('registro', { title: 'Registro - Metro de Quito', error: null });
 };
 
-// Procesar Registro
 exports.registro = async (req, res) => {
     const { nombre, email, password } = req.body;
 
     try {
-        // Verificar si el usuario ya existe
         const userExist = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
         if (userExist.rows.length > 0) {
             return res.render('registro', {
@@ -25,11 +21,9 @@ exports.registro = async (req, res) => {
             });
         }
 
-        // Hashear contraseña
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
 
-        // Insertar nuevo usuario (rol por defecto 'cliente')
         await db.query(
             'INSERT INTO usuarios (nombre, email, password, rol) VALUES ($1, $2, $3, $4)',
             [nombre, email, hashPassword, 'cliente']
@@ -46,7 +40,6 @@ exports.registro = async (req, res) => {
     }
 };
 
-// Procesar Login
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -58,7 +51,6 @@ exports.login = async (req, res) => {
             const validPassword = await bcrypt.compare(password, user.password);
 
             if (validPassword) {
-                // Crear sesión
                 req.session.loggedin = true;
                 req.session.userId = user.id;
                 req.session.name = user.nombre;
@@ -86,7 +78,6 @@ exports.login = async (req, res) => {
     }
 };
 
-// Cerrar Sesión
 exports.logout = (req, res) => {
     req.session.destroy((err) => {
         if (err) console.log(err);

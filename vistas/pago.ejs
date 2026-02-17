@@ -39,7 +39,47 @@
             
             <form action="/procesar-pago" method="POST" id="paymentForm">
                 <input type="hidden" name="rutaId" value="<%= ruta.id %>">
-                <input type="hidden" name="monto" value="<%= ruta.precio %>">
+                <input type="hidden" name="tipoTarifa" id="tipoTarifa" value="general">
+                
+                <div class="glass-card" style="margin-bottom: 30px; border-color: var(--accent-color);">
+                    <h3><i class="fas fa-tags"></i> Tipo de Tarifa</h3>
+                    <div class="payment-methods" style="display: flex; gap: 20px; justify-content: center; margin: 20px 0; flex-wrap: wrap;">
+                        <label class="payment-option">
+                            <input type="radio" name="tarifa" value="general" data-precio="<%= parseFloat(ruta.precio).toFixed(2) %>" checked required>
+                            <div class="option-card">
+                                <i class="fas fa-user"></i>
+                                <span>General</span>
+                                <small style="display: block; margin-top: 5px;">$<%= parseFloat(ruta.precio).toFixed(2) %></small>
+                            </div>
+                        </label>
+                        
+                        <% 
+                            // Cálculos de tarifas
+                            let precioBase = parseFloat(ruta.precio);
+                            let precioReducido = (precioBase * 0.5).toFixed(2); // 50%
+                            let precioDiferencial = (precioBase * 0.2222).toFixed(2); // ~22%
+                        %>
+
+                        <label class="payment-option">
+                            <input type="radio" name="tarifa" value="reducida" data-precio="<%= precioReducido %>">
+                            <div class="option-card">
+                                <i class="fas fa-user-graduate"></i>
+                                <span>Reducida</span>
+                                <small style="display: block; margin-top: 5px;">$<%= precioReducido %></small>
+                            </div>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="tarifa" value="diferencial" data-precio="<%= precioDiferencial %>">
+                            <div class="option-card">
+                                <i class="fas fa-wheelchair"></i>
+                                <span>Diferencial</span>
+                                <small style="display: block; margin-top: 5px;">$<%= precioDiferencial %></small>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <input type="hidden" name="monto" id="montoInput" value="<%= ruta.precio %>">
 
                 <div class="payment-methods" style="display: flex; gap: 20px; justify-content: center; margin: 30px 0; flex-wrap: wrap;">
                     
@@ -114,9 +154,24 @@
         const paymentForm = document.getElementById('paymentForm');
         const cardFields = document.getElementById('card-fields');
         const transferFields = document.getElementById('transfer-instructions');
-        const radioButtons = document.querySelectorAll('input[name="metodoPago"]');
+        const methodRadioButtons = document.querySelectorAll('input[name="metodoPago"]');
+        const fareRadioButtons = document.querySelectorAll('input[name="tarifa"]');
+        const priceDisplay = document.querySelector('.price');
+        const montoInput = document.getElementById('montoInput');
+        const tipoTarifaInput = document.getElementById('tipoTarifa');
 
-        radioButtons.forEach(radio => {
+        // Lógica para cambio de tarifa
+        fareRadioButtons.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const precio = parseFloat(e.target.dataset.precio).toFixed(2);
+                priceDisplay.textContent = `$${precio}`;
+                montoInput.value = precio;
+                tipoTarifaInput.value = e.target.value;
+            });
+        });
+
+        // Lógica para método de pago
+        methodRadioButtons.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === 'credito' || e.target.value === 'debito') {
                     cardFields.style.display = 'block';
