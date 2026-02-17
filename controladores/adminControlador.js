@@ -1,7 +1,6 @@
 const db = require('../config/base_de_datos');
 const bcrypt = require('bcryptjs');
 
-// Dashboard Admin
 exports.dashboard = async (req, res) => {
     try {
         const usuariosCount = await db.query('SELECT COUNT(*) FROM usuarios');
@@ -24,7 +23,6 @@ exports.dashboard = async (req, res) => {
     }
 };
 
-// --- GESTIÓN DE ESTACIONES ---
 exports.listarEstaciones = async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM estaciones ORDER BY id');

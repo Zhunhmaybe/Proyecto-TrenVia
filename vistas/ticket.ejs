@@ -60,10 +60,75 @@
             </div>
 
             <div class="invoice-footer">
+                <button id="downloadPdf" class="btn-invoice" style="background-color: #e74c3c; margin-right: 10px;">
+                    <i class="fas fa-file-pdf"></i> Descargar PDF
+                </button>
                 <a href="/" class="btn-invoice">Volver al Inicio</a>
                 <p style="margin-top: 15px; font-size: 0.75rem; color: #aaa;">Gracias por viajar con nosotros</p>
             </div>
         </div>
     </div>
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            header, nav, .navbar {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+                background-image: none !important;
+            }
+
+            .ticket-container, .ticket-container * {
+                visibility: visible;
+            }
+
+            .ticket-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                display: flex !important;
+                justify-content: center;
+                align-items: flex-start; 
+                z-index: 9999;
+            }
+
+            .invoice-card {
+                display: block !important;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                margin: 20px auto !important; 
+                width: 100% !important;
+                max-width: 600px !important;
+                visibility: visible;
+            }
+
+            .invoice-footer a, 
+            .invoice-footer button {
+                display: none !important;
+            }
+
+            .qr-section img {
+                max-width: 200px !important;
+                width: 200px !important;
+                height: auto !important;
+                display: block;
+                margin: 0 auto;
+            }
+        }
+    </style>
+
+    <script>
+        document.getElementById('downloadPdf').addEventListener('click', function() {
+            window.print();
+        });
+    </script>
 </body>
 </html>
