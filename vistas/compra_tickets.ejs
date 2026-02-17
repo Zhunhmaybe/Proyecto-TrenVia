@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <%- include('partials/navbar') %>
+
+    <div class="container" style="padding-top: 40px;">
+        <div class="routes-section">
+            <h2 class="section-title">Rutas disponibles - <%= fechaActual %></h2>
+            <div class="routes-grid">
+                <% if (rutas && rutas.length > 0) { %>
+                    <% rutas.forEach(ruta => { %>
+                        <div class="route-card glass-card">
+                            <div class="route-icon"><i class="fas fa-subway"></i></div>
+                            <h3><%= ruta.nombre %></h3>
+                            <div class="route-details">
+                                <p><i class="fas fa-map-marker-alt" style="color: #ff1744;"></i> <strong><%= ruta.origen %></strong></p>
+                                <i class="fas fa-arrow-down" style="margin: 5px 0; opacity: 0.5;"></i>
+                                <p><i class="fas fa-map-marker-alt" style="color: #00e676;"></i> <strong><%= ruta.destino %></strong></p>
+                            </div>
+                            <div class="route-price">$<%= parseFloat(ruta.precio).toFixed(2) %></div>
+                            <a href="/pago?rutaId=<%= ruta.id %>" class="btn-primary btn-sm">Comprar Ticket</a>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p>No hay rutas disponibles en este momento.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section social">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+            </div>
+
+            <div class="footer-section info">
+                <h3>Información</h3>
+                <ul>
+                    <li><a href="#">Antisoborno</a></li>
+                    <li><a href="#">Transparencia</a></li>
+                    <li><a href="#">Rendición de Cuentas</a></li>
+                    <li><a href="#">PAC</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section contacto">
+                <h3>Contacto</h3>
+                <p><strong>Correo:</strong><br> comunicacion@metrodequito.gob.ec</p>
+                <p><strong>Teléfono:</strong> 023827860</p>
+                <p><strong>Dirección:</strong> Calle Montúfar N2-50 y Calle Sucre</p>
+            </div>
+
+            <div class="footer-section logos">
+                <div class="logo-placeholder">
+                    <i class="fas fa-subway"></i> Metro <br>
+                    <span>Quito Alcaldía Metropolitana</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f4f4f4; }
+        .form-group { margin-bottom: 1rem; }
+        input, select { padding: 0.5rem; width: 100%; box-sizing: border-box; }
+        .btn-add { background: #28a745; color: white; padding: 0.5rem 1rem; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="admin-container">
+        <h1>Gestión de Rutas</h1>
+        
+        <div style="background: rgba(255, 255, 255, 0.182); padding: 1rem; margin-bottom: 2rem; border-radius: 8px;">
+            <h3>Nueva Ruta</h3>
+            <form action="/admin/rutas/crear" method="POST">
+                <div class="form-group">
+                    <label>Nombre de la Ruta:</label>
+                    <input type="text" name="nombre" required placeholder="Ej: Ruta Express Norte">
+                </div>
+                <div class="form-group">
+                    <label>Precio:</label>
+                    <input type="number" step="0.01" name="precio" required>
+                </div>
+                <div class="form-group">
+                    <label>Estación Origen:</label>
+                    <select name="estacion_origen_id" required>
+                        <% estaciones.forEach(est => { %>
+                            <option value="<%= est.id %>"><%= est.nombre %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estación Destino:</label>
+                    <select name="estacion_destino_id" required>
+                        <% estaciones.forEach(est => { %>
+                            <option value="<%= est.id %>"><%= est.nombre %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn-add">Agregar Ruta</button>
+            </form>
+        </div>
+
+        <table class="glass-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Origen</th>
+                    <th>Destino</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% rutas.forEach(ruta => { %>
+                <tr>
+                    <td><%= ruta.id %></td>
+                    <td><%= ruta.nombre %></td>
+                    <td><%= ruta.origen_nombre %></td>
+                    <td><%= ruta.destino_nombre %></td>
+                    <td>$<%= ruta.precio %></td>
+                    <td>
+                        <button onclick='openEditModal(<%= JSON.stringify(ruta) %>)' class="btn-edit">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal de Edición -->
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
+        <div class="glass-form-container" style="width: 100%; max-width: 500px; margin: 0; position: relative;">
+            <span onclick="document.getElementById('editModal').style.display='none'" style="position: absolute; top: 15px; right: 20px; color: white; font-size: 28px; cursor: pointer;">&times;</span>
+            <h3 style="margin-bottom: 20px;">Editar Ruta</h3>
+            <form action="/admin/rutas/editar" method="POST">
+                <input type="hidden" id="edit_id" name="id">
+                <div class="form-group">
+                    <label>Nombre de la Ruta:</label>
+                    <input type="text" id="edit_nombre" name="nombre" class="glass-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Precio:</label>
+                    <input type="number" step="0.01" id="edit_precio" name="precio" class="glass-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Estación Origen:</label>
+                    <select id="edit_estacion_origen_id" name="estacion_origen_id" class="glass-input" required>
+                        <% estaciones.forEach(est => { %>
+                            <option value="<%= est.id %>"><%= est.nombre %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estación Destino:</label>
+                    <select id="edit_estacion_destino_id" name="estacion_destino_id" class="glass-input" required>
+                        <% estaciones.forEach(est => { %>
+                            <option value="<%= est.id %>"><%= est.nombre %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <button type="submit" class="btn-add">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(ruta) {
+            document.getElementById('edit_id').value = ruta.id;
+            document.getElementById('edit_nombre').value = ruta.nombre;
+            document.getElementById('edit_precio').value = ruta.precio;
+            document.getElementById('edit_estacion_origen_id').value = ruta.estacion_origen_id;
+            document.getElementById('edit_estacion_destino_id').value = ruta.estacion_destino_id;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

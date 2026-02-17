@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+        .stat-card {
+            background: rgb(213, 169, 247);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            color: rgb(0, 0, 0);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .admin-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .admin-btn {
+            display: block;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+        .admin-btn:hover {
+            background: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="admin-container">
+        <h1>Dashboard Administrativo</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.usuarios %></div>
+                <div>Usuarios</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.tickets %></div>
+                <div>Tickets Vendidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.rutas %></div>
+                <div>Rutas Activas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.estaciones %></div>
+                <div>Estaciones</div>
+            </div>
+        </div>
+
+        <h2>Gestión</h2>
+        <div class="admin-menu">
+            <a href="/admin/estaciones" class="admin-btn"><i class="fas fa-landmark"></i> Gestionar Estaciones</a>
+            <a href="/admin/rutas" class="admin-btn"><i class="fas fa-route"></i> Gestionar Rutas</a>
+            <a href="/admin/usuarios" class="admin-btn"><i class="fas fa-users"></i> Gestionar Usuarios</a>
+            <a href="/admin/tickets" class="admin-btn"><i class="fas fa-ticket-alt"></i> Reporte de Tickets</a>
+            <a href="/admin/pagos" class="admin-btn"><i class="fas fa-money-bill-wave"></i> Reporte de Pagos</a>
+        </div>
+    </div>
+</body>
+</html>

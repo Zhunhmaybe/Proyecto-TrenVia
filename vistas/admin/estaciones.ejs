@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f4f4f4; }
+        .form-group { margin-bottom: 1rem; }
+        input { padding: 0.5rem; width: 100%; box-sizing: border-box; }
+        .btn-add { background: #28a745; color: white; padding: 0.5rem 1rem; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="admin-container">
+        <h1>Gestión de Estaciones</h1>
+        
+        <div class="glass-form-container">
+            <h3>Nueva Estación</h3>
+            <form action="/admin/estaciones/crear" method="POST">
+                <div class="form-group">
+                    <label>Nombre:</label>
+                    <input type="text" name="nombre" class="glass-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Dirección:</label>
+                    <input type="text" name="direccion" class="glass-input" required>
+                </div>
+                <button type="submit" class="btn-add">Agregar Estación</button>
+            </form>
+        </div>
+
+        <table class="glass-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Dirección</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% estaciones.forEach(estacion => { %>
+                <tr>
+                    <td><%= estacion.id %></td>
+                    <td><%= estacion.nombre %></td>
+                    <td><%= estacion.direccion %></td>
+                    <td style="display: flex; gap: 10px;">
+                        <button onclick='openEditModal(<%= JSON.stringify(estacion) %>)' class="btn-edit">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <!-- Modal de Edición -->
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center;">
+        <div class="glass-form-container" style="width: 100%; max-width: 500px; margin: 0; position: relative;">
+            <span onclick="document.getElementById('editModal').style.display='none'" style="position: absolute; top: 15px; right: 20px; color: white; font-size: 28px; cursor: pointer;">&times;</span>
+            <h3 style="margin-bottom: 20px;">Editar Estación</h3>
+            <form action="/admin/estaciones/editar" method="POST">
+                <input type="hidden" id="edit_id" name="id">
+                <div class="form-group">
+                    <label>Nombre:</label>
+                    <input type="text" id="edit_nombre" name="nombre" class="glass-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Dirección:</label>
+                    <input type="text" id="edit_direccion" name="direccion" class="glass-input" required>
+                </div>
+                <button type="submit" class="btn-add">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts y Modales -->
+    <script>
+        function openEditModal(estacion) {
+            document.getElementById('edit_id').value = estacion.id;
+            document.getElementById('edit_nombre').value = estacion.nombre;
+            document.getElementById('edit_direccion').value = estacion.direccion;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Detectar parámetros URL para notificaciones
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const success = urlParams.get('success');
+        const id = urlParams.get('id');
+        const count = urlParams.get('count');
+
+        if (error === 'dependency') {
+            const confirmDelete = confirm(`⚠️ ERROR: No se puede eliminar esta estación porque tiene ${count} rutas asociadas.\n\n¿Deseas ELIMINARLA FORZOSAMENTE y borrar también todas sus rutas asociadas?\n(Esta acción no se puede deshacer)`);
+            if (confirmDelete) {
+                window.location.href = `/admin/estaciones/eliminar/${id}?force=true`;
+            } else {
+                // Limpiar URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        } else if (error === 'server') {
+            alert('Error del servidor: ' + decodeURIComponent(urlParams.get('message')));
+             window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (success === 'deleted') {
+            // Opcional: Mostrar un toast o alerta pequeña
+            // alert('Estación eliminada correctamente.');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    </script>
+</body>
+</html>

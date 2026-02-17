@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: rgba(255, 255, 255, 0.227); }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f4f4f429; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="glass-card">
+        <h1>Reporte de Tickets Vendidos</h1>
+        
+        <table class="glass-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Ruta</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% tickets.forEach(ticket => { %>
+                <tr>
+                    <td><%= ticket.id %></td>
+                    <td><%= ticket.usuario_nombre %></td>
+                    <td><%= ticket.ruta_nombre %></td>
+                    <td>
+                        <span style="padding: 4px 8px; border-radius: 4px; background: <%= ticket.estado === 'pagado' ? '#d4edda' : '#f8d7da' %>; color: <%= ticket.estado === 'pagado' ? '#155724' : '#721c24' %>;">
+                            <%= ticket.estado %>
+                        </span>
+                    </td>
+                    <td><%= ticket.fecha_compra ? ticket.fecha_compra.toLocaleString() : 'N/A' %></td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

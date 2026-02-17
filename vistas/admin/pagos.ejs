@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/navbar') %>
+
+    <div class="glass-card" style="max-width: 1000px; width: 95%;">
+        <h1>Reporte de Pagos</h1>
+        
+        <table class="glass-table">
+            <thead>
+                <tr>
+                    <th>ID Pago</th>
+                    <th>Ticket ID</th>
+                    <th>Monto</th>
+                    <th>Método</th>
+                    <th>Referencia</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% pagos.forEach(pago => { %>
+                <tr>
+                    <td><%= pago.id %></td>
+                    <td><%= pago.ticket_id %></td>
+                    <td>$<%= pago.monto %></td>
+                    <td><%= pago.metodo_pago %></td>
+                    <td><%= pago.referencia %></td>
+                    <td><%= pago.created_at ? pago.created_at.toLocaleString() : 'N/A' %></td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

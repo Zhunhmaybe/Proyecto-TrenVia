@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <div class="container" style="padding-top: 40px;">
+        
+        <div class="glass-card" style="margin-bottom: 30px; border-color: var(--accent-color);">
+            <h2 style="margin-top: 0;"><i class="fas fa-receipt"></i> Resumen de Compra</h2>
+            <div class="ticket-summary" style="display: flex; justify-content: space-around; flex-wrap: wrap; text-align: left; margin-top: 20px;">
+                <div class="summary-item">
+                    <small>Ruta</small>
+                    <p><strong><%= ruta.nombre %></strong></p>
+                </div>
+                <div class="summary-item">
+                    <small>Origen</small>
+                    <p><%= ruta.origen %></p>
+                </div>
+                <div class="summary-item">
+                    <small>Destino</small>
+                    <p><%= ruta.destino %></p>
+                </div>
+                <div class="summary-item">
+                    <small>Total a Pagar</small>
+                    <p class="price" style="margin: 0; font-size: 1.5rem;">$<%= typeof ruta.precio === 'number' ? ruta.precio.toFixed(2) : parseFloat(ruta.precio).toFixed(2) %></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h2><i class="fas fa-credit-card"></i> Selección de Pago</h2>
+            
+            <form action="/procesar-pago" method="POST" id="paymentForm">
+                <input type="hidden" name="rutaId" value="<%= ruta.id %>">
+                <input type="hidden" name="monto" value="<%= ruta.precio %>">
+
+                <div class="payment-methods" style="display: flex; gap: 20px; justify-content: center; margin: 30px 0; flex-wrap: wrap;">
+                    
+                    <label class="payment-option">
+                        <input type="radio" name="metodoPago" value="credito" required>
+                        <div class="option-card">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Tarjeta de Crédito</span>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="metodoPago" value="debito" required>
+                        <div class="option-card">
+                            <i class="far fa-credit-card"></i>
+                            <span>Tarjeta de Débito</span>
+                        </div>
+                    </label>
+
+                    <label class="payment-option">
+                        <input type="radio" name="metodoPago" value="transferencia" required>
+                        <div class="option-card">
+                            <i class="fas fa-university"></i>
+                            <span>Transferencia</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div id="card-fields" class="payment-details" style="display: none;">
+                    <h3>Datos de Tarjeta</h3>
+                    <div class="form-group">
+                        <label>Número de Tarjeta</label>
+                        <input type="text" placeholder="0000 0000 0000 0000" maxlength="19">
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Expiración</label>
+                            <input type="text" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>CVC</label>
+                            <input type="text" placeholder="123" maxlength="3">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Titular de la tarjeta</label>
+                        <input type="text" placeholder="Nombre como aparece en la tarjeta">
+                    </div>
+                </div>
+
+                <div id="transfer-instructions" class="payment-details" style="display: none; text-align: left;">
+                    <h3>Instrucciones de Transferencia</h3>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
+                        <p><strong>Banco:</strong> Banco Pichincha</p>
+                        <p><strong>Cuenta:</strong> Corriente</p>
+                        <p><strong>Número:</strong> 2100xxxxxx</p>
+                        <p><strong>Beneficiario:</strong> Metro de Quito EP</p>
+                        <p><strong>RUC:</strong> 1768xxxxxx001</p>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Número de Comprobante / Referencia:</label>
+                        <input type="text" name="referencia" placeholder="Ingrese el número de comprobante">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; max-width: 300px; margin-top: 20px;">Confirmar Pago</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const paymentForm = document.getElementById('paymentForm');
+        const cardFields = document.getElementById('card-fields');
+        const transferFields = document.getElementById('transfer-instructions');
+        const radioButtons = document.querySelectorAll('input[name="metodoPago"]');
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'credito' || e.target.value === 'debito') {
+                    cardFields.style.display = 'block';
+                    transferFields.style.display = 'none';
+                } else if (e.target.value === 'transferencia') {
+                    cardFields.style.display = 'none';
+                    transferFields.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
