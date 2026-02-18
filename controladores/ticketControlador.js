@@ -17,16 +17,18 @@ exports.procesarPago = async (req, res) => {
         if (metodoPago === 'credito' || metodoPago === 'debito') {
             referenciaFinal = `CARD-${Date.now()}`;
         }
+        const fechaActual = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Guayaquil" }));
+
         const codigoUnico = `TICKET-${Date.now()}-${usuarioId}-${rutaId}`;
         const qrImage = await QRCode.toDataURL(codigoUnico);
         const resultTicket = await db.query(
-            'INSERT INTO tickets (usuario_id, ruta_id, codigo_qr, estado) VALUES ($1, $2, $3, $4) RETURNING id',
-            [usuarioId, rutaId, qrImage, 'pagado']
+            'INSERT INTO tickets (usuario_id, ruta_id, codigo_qr, estado, fecha_compra) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+            [usuarioId, rutaId, qrImage, 'pagado', fechaActual]
         );
         const ticketId = resultTicket.rows[0].id;
         await db.query(
-            'INSERT INTO pagos (ticket_id, monto, metodo_pago, referencia) VALUES ($1, $2, $3, $4)',
-            [ticketId, montoFinal, metodoPago, referenciaFinal || `REF-${Date.now()}`]
+            'INSERT INTO pagos (ticket_id, monto, metodo_pago, referencia, fecha_pago) VALUES ($1, $2, $3, $4, $5)',
+            [ticketId, montoFinal, metodoPago, referenciaFinal || `REF-${Date.now()}`, fechaActual]
         );
         res.redirect(`/ticket/${ticketId}`);
 

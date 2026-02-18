@@ -205,7 +205,16 @@ exports.listarTickets = async (req, res) => {
             JOIN rutas r ON t.ruta_id = r.id
             ORDER BY t.fecha_compra DESC
         `);
-        res.render('admin/tickets', { title: 'Reporte de Tickets', tickets: result.rows });
+        const totalIngresos = await db.query('SELECT SUM(monto) as total FROM pagos');
+
+        res.render('admin/tickets', {
+            title: 'Reporte de Tickets',
+            tickets: result.rows,
+            stats: {
+                tickets: result.rows.length,
+                ingresos: totalIngresos.rows[0].total || 0
+            }
+        });
     } catch (error) {
         console.error(error);
         try {
@@ -216,7 +225,11 @@ exports.listarTickets = async (req, res) => {
                 JOIN rutas r ON t.ruta_id = r.id
                 ORDER BY t.id DESC
             `);
-            res.render('admin/tickets', { title: 'Reporte de Tickets', tickets: resultBackup.rows });
+            res.render('admin/tickets', {
+                title: 'Reporte de Tickets',
+                tickets: resultBackup.rows,
+                stats: { tickets: 0, ingresos: 0 }
+            });
         } catch (e2) {
             res.status(500).send('Error al listar tickets: ' + e2.message);
         }
