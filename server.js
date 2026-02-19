@@ -120,10 +120,13 @@ app.get('/pago', async (req, res) => {
         };
     }
 
-    res.render('pago', { title: 'Pasarela de Pago', ruta });
+    const cantidad = parseInt(req.query.cantidad) || 1;
+
+    res.render('pago', { title: 'Pasarela de Pago', ruta, cantidad });
 });
 
 app.post('/procesar-pago', ticketControlador.procesarPago);
+app.get('/compra-exitosa', ticketControlador.mostrarExito);
 app.get('/ticket/:id', ticketControlador.verTicket);
 app.get('/mis-tickets', ticketControlador.listarTicketsUsuario);
 

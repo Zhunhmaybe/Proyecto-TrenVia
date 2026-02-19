@@ -75,7 +75,19 @@
                                 <p><i class="fas fa-map-marker-alt" style="color: #00e676;"></i> <strong><%= ruta.destino %></strong></p>
                             </div>
                             <div class="route-price">$<%= parseFloat(ruta.precio).toFixed(2) %></div>
-                            <a href="/pago?rutaId=<%= ruta.id %>" class="btn-primary btn-sm">Comprar Ticket</a>
+                            
+                            <div style="margin: 10px 0; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                <label for="cant-<%= ruta.id %>" style="color: white; font-size: 0.9rem;">Cantidad:</label>
+                                <select id="cant-<%= ruta.id %>" class="form-control" style="width: 70px; padding: 5px; border-radius: 5px; border: none; background-color: rgba(255, 255, 255, 0.342);" onchange="updateLink('<%= ruta.id %>')">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+
+                            <a href="/pago?rutaId=<%= ruta.id %>&cantidad=1" id="link-<%= ruta.id %>" class="btn-primary btn-sm">Comprar Ticket</a>
                         </div>
                     <% }) %>
                 <% } else { %>
@@ -147,6 +159,13 @@
         
         for (let i = 0; i < 8; i++) {
             createSteamPuff();
+        }
+        
+        
+        function updateLink(id) {
+            const cantidad = document.getElementById('cant-' + id).value;
+            const link = document.getElementById('link-' + id);            
+            link.href = `/pago?rutaId=${id}&cantidad=${cantidad}`;
         }
         
         setInterval(createSteamPuff, 800);

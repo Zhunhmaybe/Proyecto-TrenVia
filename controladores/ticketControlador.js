@@ -3,15 +3,17 @@ const db = require('../config/base_de_datos');
 
 exports.procesarPago = async (req, res) => {
     const { rutaId, metodoPago, referencia, tipoTarifa } = req.body;
+    let cantidad = parseInt(req.body.cantidad) || 1;
     const usuarioId = req.session.userId || 1;
 
     try {
         const rutaResult = await db.query('SELECT precio FROM rutas WHERE id = $1', [rutaId]);
-        let montoFinal = 0.45;
-        if (rutaResult.rows.length > 0) montoFinal = parseFloat(rutaResult.rows[0].precio);
+        let precioBase = 0.45;
+        if (rutaResult.rows.length > 0) precioBase = parseFloat(rutaResult.rows[0].precio);
 
-        if (tipoTarifa === 'reducida') montoFinal = 0.22;
-        else if (tipoTarifa === 'diferencial') montoFinal = 0.10;
+        let precioUnitario = precioBase;
+        if (tipoTarifa === 'reducida') precioUnitario = 0.22;
+        else if (tipoTarifa === 'diferencial') precioUnitario = 0.10;
 
         let referenciaFinal = referencia;
         if (metodoPago === 'credito' || metodoPago === 'debito') {
@@ -19,22 +21,72 @@ exports.procesarPago = async (req, res) => {
         }
         const fechaActual = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Guayaquil" }));
 
-        const codigoUnico = `TICKET-${Date.now()}-${usuarioId}-${rutaId}`;
-        const qrImage = await QRCode.toDataURL(codigoUnico);
-        const resultTicket = await db.query(
-            'INSERT INTO tickets (usuario_id, ruta_id, codigo_qr, estado, fecha_compra) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-            [usuarioId, rutaId, qrImage, 'pagado', fechaActual]
-        );
-        const ticketId = resultTicket.rows[0].id;
-        await db.query(
-            'INSERT INTO pagos (ticket_id, monto, metodo_pago, referencia, fecha_pago) VALUES ($1, $2, $3, $4, $5)',
-            [ticketId, montoFinal, metodoPago, referenciaFinal || `REF-${Date.now()}`, fechaActual]
-        );
-        res.redirect(`/ticket/${ticketId}`);
+        const ticketIds = [];
+
+        for (let i = 0; i < cantidad; i++) {
+            const codigoUnico = `TICKET-${Date.now()}-${usuarioId}-${rutaId}-${i}`;
+            const qrImage = await QRCode.toDataURL(codigoUnico);
+
+            const resultTicket = await db.query(
+                'INSERT INTO tickets (usuario_id, ruta_id, codigo_qr, estado, fecha_compra) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+                [usuarioId, rutaId, qrImage, 'pagado', fechaActual]
+            );
+            const ticketId = resultTicket.rows[0].id;
+            ticketIds.push(ticketId);
+
+            await db.query(
+                'INSERT INTO pagos (ticket_id, monto, metodo_pago, referencia, fecha_pago) VALUES ($1, $2, $3, $4, $5)',
+                [ticketId, precioUnitario, metodoPago, referenciaFinal || `REF-${Date.now()}`, fechaActual]
+            );
+        }
+
+        req.session.lastTickets = ticketIds;
+        res.redirect('/compra-exitosa');
 
     } catch (error) {
         console.error(error);
         res.status(500).send('Error al procesar el pago: ' + error.message);
+    }
+};
+
+exports.mostrarExito = async (req, res) => {
+    const ticketIds = req.session.lastTickets;
+
+    if (!ticketIds || ticketIds.length === 0) {
+        return res.redirect('/');
+    }
+
+    try {
+        // Obtenemos los tickets recién comprados
+        const placeholders = ticketIds.map((_, i) => `$${i + 1}`).join(',');
+        const query = `
+            SELECT t.*, r.nombre as ruta_nombre, p.monto as precio, e1.nombre as origen, e2.nombre as destino 
+            FROM tickets t
+            JOIN rutas r ON t.ruta_id = r.id
+            JOIN pagos p ON p.ticket_id = t.id
+            JOIN estaciones e1 ON r.estacion_origen_id = e1.id
+            JOIN estaciones e2 ON r.estacion_destino_id = e2.id
+            WHERE t.id IN (${placeholders})
+        `;
+
+        const result = await db.query(query, ticketIds);
+
+        // Calcular total
+        const total = result.rows.reduce((sum, ticket) => sum + parseFloat(ticket.precio), 0);
+
+        res.render('compra_exitosa', {
+            tickets: result.rows,
+            total: total.toFixed(2),
+            cantidad: result.rows.length,
+            title: 'Compra Exitosa - Metro de Quito'
+        });
+
+        // Opcional: Limpiar la sesión después de mostrar (o mantenerlo por si recarga)
+        // req.session.lastTickets = null;
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al recuperar los tickets: ' + error.message);
     }
 };
 
