@@ -57,7 +57,6 @@ exports.mostrarExito = async (req, res) => {
     }
 
     try {
-        // Obtenemos los tickets recién comprados
         const placeholders = ticketIds.map((_, i) => `$${i + 1}`).join(',');
         const query = `
             SELECT t.*, r.nombre as ruta_nombre, p.monto as precio, e1.nombre as origen, e2.nombre as destino 
@@ -71,7 +70,6 @@ exports.mostrarExito = async (req, res) => {
 
         const result = await db.query(query, ticketIds);
 
-        // Calcular total
         const total = result.rows.reduce((sum, ticket) => sum + parseFloat(ticket.precio), 0);
 
         res.render('compra_exitosa', {
@@ -80,9 +78,6 @@ exports.mostrarExito = async (req, res) => {
             cantidad: result.rows.length,
             title: 'Compra Exitosa - Metro de Quito'
         });
-
-        // Opcional: Limpiar la sesión después de mostrar (o mantenerlo por si recarga)
-        // req.session.lastTickets = null;
 
     } catch (error) {
         console.error(error);
